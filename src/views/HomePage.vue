@@ -47,6 +47,7 @@ import 'swiper/css';
 const notes = ref([]);
 
 onMounted(async () => {
+  console.log('test env vars - ', import.meta.env.VITE_TEST)
   await signIn("istomina.asia@yandex.ru", "777777");
   const receivedNotes = await http.getNotes();
 
