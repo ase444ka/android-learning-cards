@@ -12,6 +12,8 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_SENDER,
   appId: `1:376202058658:web:${import.meta.env.VITE_APP_ID}`,
 };
+console.log('test env vars - ', import.meta.env.VITE_TEST)
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
