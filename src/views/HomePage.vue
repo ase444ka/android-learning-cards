@@ -14,21 +14,62 @@
       </ion-header>
 
       <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <div class="swiper">
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    <div class="swiper-slide"  v-for="note in notes" :key="note.id" >
+      <FlippingCard :note="note" />
+    
+    </div>
+
+  </div>
+
+
+</div>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script setup lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+<script setup>
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
+import {ref, onMounted} from 'vue';
+import FlippingCard from "@/components/FlippingCard.vue";
+import config from "@/firebase";
+import http from "@/http";
+import { signIn } from "@/auth";
+// import Swiper JS
+import Swiper from 'swiper';
+// import Swiper styles
+import 'swiper/css';
+
+const notes = ref([]);
+
+onMounted(async () => {
+  await signIn("istomina.asia@yandex.ru", "777777");
+  const receivedNotes = await http.getNotes();
+
+  notes.value = Object.entries(receivedNotes)
+    .map((entry) => ({
+      id: entry[0],
+      ...entry[1],
+    }))
+    const swiper = new Swiper('.swiper', {
+
+
+
+});
+console.log(swiper)
+}
+
+);
 </script>
 
 <style scoped>
 #container {
   text-align: center;
-  
+
   position: absolute;
   left: 0;
   right: 0;
@@ -44,9 +85,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue
 #container p {
   font-size: 16px;
   line-height: 22px;
-  
+
   color: #8c8c8c;
-  
+
   margin: 0;
 }
 
