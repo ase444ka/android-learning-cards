@@ -67,12 +67,15 @@ console.log(swiper)
 </script>
 
 <style scoped>
+@media (max-width: 800px) {
 .my-header {
   opacity: 0;
 }
 .my-header:hover {
  opacity: 1;
 }
+}
+
 #container {
   text-align: center;
 
