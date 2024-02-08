@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+    <ion-header class="my-header">
       <ion-toolbar>
         <ion-title>Blank</ion-title>
       </ion-toolbar>
@@ -67,6 +67,12 @@ console.log(swiper)
 </script>
 
 <style scoped>
+.my-header {
+  opacity: 0;
+}
+.my-header:hover {
+ opacity: 1;
+}
 #container {
   text-align: center;
 

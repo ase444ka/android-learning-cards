@@ -86,6 +86,13 @@ watchEffect(async () => {
     width: 50%;
     margin: 0 auto;
 }
+@media (max-width: 500px) {
+  .flipper {
+    width: 90%;
+  }
+  /* … */
+}
+
 .card {
     display: block;
     min-width: 300px;
