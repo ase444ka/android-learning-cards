@@ -53,7 +53,7 @@ onMounted(async () => {
     await document.documentElement.requestFullscreen();
 
     } catch (e) {
-      alert('no! ' + e.message)
+      alert('no! ', e.message)
     }
   }
   const newOrientation = getOppositeOrientation();
@@ -61,7 +61,7 @@ onMounted(async () => {
   await screen.orientation.lock(newOrientation);
 
   } catch (e) {
-    alert('trololo ' + e.message)
+    alert('trololo ', e.message)
   }
 }
   function getOppositeOrientation() {
