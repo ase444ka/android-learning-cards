@@ -52,10 +52,6 @@ const imageLoading = ref(false);
 
 watchEffect(async () => {
   if (!props.note.image) return;
-  if (document.documentElement.clientWidth < 900) {
-    let width = document.documentElement.clientWidth
-    let height = document.documentElement.clientHeight
-  }
   imageLoading.value = true
   imageSizeX.value = props.note.image.sizeX;
   imageSizeY.value = props.note.image.sizeY;
