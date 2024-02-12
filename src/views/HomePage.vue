@@ -14,19 +14,15 @@
       </ion-header>
 
       <div id="container">
-      <div class="swiper">
-  <!-- Additional required wrapper -->
-  <div class="swiper-wrapper">
-    <!-- Slides -->
-    <div class="swiper-slide"  v-for="note in notes" :key="note.id" >
-      <FlippingCard :note="note" />
-    
-    </div>
-
-  </div>
-
-
-</div>
+        <div class="swiper">
+          <!-- Additional required wrapper -->
+          <div class="swiper-wrapper">
+            <!-- Slides -->
+            <div class="swiper-slide" v-for="note in notes" :key="note.id">
+              <FlippingCard :note="note" />
+            </div>
+          </div>
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -35,10 +31,10 @@
 <script setup>
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
 import {ref, onMounted} from 'vue';
-import FlippingCard from "@/components/FlippingCard.vue";
-import config from "@/firebase";
-import http from "@/http";
-import { signIn } from "@/auth";
+import FlippingCard from '@/components/FlippingCard.vue';
+import config from '@/firebase';
+import http from '@/http';
+import {signIn} from '@/auth';
 // import Swiper JS
 import Swiper from 'swiper';
 // import Swiper styles
@@ -47,33 +43,43 @@ import 'swiper/css';
 const notes = ref([]);
 
 onMounted(async () => {
-  await signIn("istomina.asia@yandex.ru", "777777");
+  async function rotate() {
+    const newOrientation = getOppositeOrientation();
+    try {
+      await screen.orientation.lock(newOrientation);
+      alert('eeee');
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+  function getOppositeOrientation() {
+    return screen.orientation.type.startsWith('portrait')
+      ? 'landscape'
+      : 'portrait';
+  }
+  setTimeout(rotate, 700);
+
+  console.log(getOppositeOrientation());
+  await signIn('istomina.asia@yandex.ru', '777777');
   const receivedNotes = await http.getNotes();
 
-  notes.value = Object.entries(receivedNotes)
-    .map((entry) => ({
-      id: entry[0],
-      ...entry[1],
-    }))
-    const swiper = new Swiper('.swiper', {
-
-
-
+  notes.value = Object.entries(receivedNotes).map((entry) => ({
+    id: entry[0],
+    ...entry[1],
+  }));
+  const swiper = new Swiper('.swiper', {});
+  console.log(swiper);
 });
-console.log(swiper)
-}
-
-);
 </script>
 
 <style scoped>
-@media (max-width: 800px) {
-.my-header {
-  opacity: 0;
-}
-.my-header:hover {
- opacity: 1;
-}
+@media (max-width: 900px) {
+  .my-header {
+    opacity: 0;
+  }
+  .my-header:hover {
+    opacity: 1;
+  }
 }
 
 #container {
