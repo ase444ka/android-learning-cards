@@ -15,16 +15,15 @@
       :code="props.note.code.code"
       :lang="props.note.code.lang"
     />
-    <div v-if="imageSrc" :style="sizesStyle">
-      <<!-- ion-skeleton-text
+    <div v-if="imageSrc">
+     <ion-skeleton-text
         :animated="true"
         :style="{
           width: `${props.note.image.sizeX}px`,
           height: `${props.note.image.sizeY}px`,
         }"
         v-if="imageLoading"
-      ></ion-skeleton-text> -->
-      <div v-if="imageLoading">loading...</div>
+      ></ion-skeleton-text>
 
       <img :src="imageSrc" @load="() => (imageLoading = false)" />
     </div>
@@ -39,6 +38,7 @@ import { ref, onMounted, watchEffect  } from 'vue'
 import { storage } from "@/firebase.js";
 import { ref as storageRef, getDownloadURL } from "firebase/storage";
 import CodeBlock from "@/components/CodeBlock.vue";
+import {IonSkeletonText} from '@ionic/vue'
 
 
 
@@ -49,6 +49,7 @@ const imageSrc = ref(null);
 const imageSizeX = ref(0);
 const imageSizeY = ref(0);
 const imageLoading = ref(false);
+
 
 watchEffect(async () => {
   if (!props.note.image) return;
@@ -85,18 +86,17 @@ watchEffect(async () => {
     height: 100%;
     width: 50%;
     margin: 0 auto;
+    overflow: auto;
 }
-@media (max-width: 500px) {
+@media (max-width: 900px) {
   .flipper {
     width: 90%;
   }
-  /* … */
 }
-
 .card {
     display: block;
     min-width: 300px;
-    min-height: 380px;
+    min-height: 300px;
     padding: 10px;
     background-color: #51aae5;
     opacity: 0.8;
@@ -115,6 +115,11 @@ watchEffect(async () => {
     will-change: transform;
     overflow: auto;
   }
+  @media (max-width: 900px) {
+  .card {
+    height: 97vh;
+  }
+}
 
 /*   .v-enter-active,
 .v-leave-active {

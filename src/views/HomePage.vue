@@ -60,7 +60,6 @@ onMounted(async () => {
 
 
 });
-console.log(swiper)
 }
 
 );
