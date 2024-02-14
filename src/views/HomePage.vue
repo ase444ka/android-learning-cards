@@ -7,14 +7,15 @@
             сначала новые
             <ion-icon slot="end" :icon="swapVerticalOutline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear">
+          <ion-button fill="clear" id="open-calendar">
             <ion-icon slot="icon-only" :icon="calendarOutline"></ion-icon>
           </ion-button>
           <ion-button fill="clear">
             <ion-icon slot="icon-only" :icon="pricetagsOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>All cards</ion-title>
+        <ion-title v-if="selectedDate">{{selectedDate}}</ion-title>
+        <ion-title v-else>Все карточки</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -26,6 +27,35 @@
       </ion-header>
 
       <div id="container">
+        <ion-modal
+          ref="calendar"
+          trigger="open-calendar"
+        >
+          <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button @click="cancel()">Cancel</ion-button>
+              </ion-buttons>
+              <ion-title>Welcome</ion-title>
+              <ion-buttons slot="end">
+                <ion-button :strong="true" @click="confirm()"
+                  >Confirm</ion-button
+                >
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-item>
+              <ion-datetime
+                locale="ru"
+                presentation="date"
+                :is-date-enabled="checkDate"
+                @ionChange="selectDate"
+              ></ion-datetime>
+            </ion-item>
+          </ion-content>
+        </ion-modal>
+
         <div class="skeleton" v-if="loading">
           <ion-skeleton-text :animated="true"></ion-skeleton-text>
         </div>
@@ -33,7 +63,7 @@
           <!-- Additional required wrapper -->
           <div class="swiper-wrapper">
             <!-- Slides -->
-            <div class="swiper-slide" v-for="note in notes" :key="note.id">
+            <div class="swiper-slide" v-for="note in filteredNotes" :key="note.id">
               <FlippingCard :note="note" />
             </div>
           </div>
@@ -55,8 +85,11 @@ import {
   IonIcon,
   IonLoading,
   IonSkeletonText,
+  IonModal,
+  IonDatetime,
+  IonItem,
 } from '@ionic/vue';
-import {ref, onMounted, defineComponent} from 'vue';
+import {ref, onMounted, defineComponent, computed} from 'vue';
 import FlippingCard from '@/components/FlippingCard.vue';
 import {
   calendarOutline,
@@ -73,6 +106,40 @@ import 'swiper/css';
 
 const notes = ref([]);
 const loading = ref(true);
+const calendar = ref();
+const selectedDate = ref(null);
+
+const presentedDates = computed(() => {
+  return notes.value.map((note) => note.day);
+});
+const checkDate = (date) => {
+  const dateObj = new Date(date);
+  const dateString = dateObj.toLocaleDateString();
+  return presentedDates.value.includes(dateString);
+};
+
+const selectDate = (event) => {
+  const date = new Date(event.detail.value);
+  selectedDate.value = date.toLocaleDateString()
+};
+const cancel = () => {
+  selectDate.value = null
+  calendar.value.$el.dismiss();
+}
+
+const confirm = () => {
+    calendar.value.$el.dismiss();
+};
+
+const filteredNotes = computed(() => {
+  if (selectedDate.value) {
+    return notes.value.filter(note => note.day === selectedDate.value)
+  } else {
+    return notes.value
+  }
+})
+
+
 
 onMounted(async () => {
   await signIn('istomina.asia@yandex.ru', '777777');
@@ -81,6 +148,7 @@ onMounted(async () => {
   notes.value = Object.entries(receivedNotes).map((entry) => ({
     id: entry[0],
     ...entry[1],
+    day: new Date(entry[1].date).toLocaleDateString()
   }));
   const swiper = new Swiper('.swiper', {});
   loading.value = false;
