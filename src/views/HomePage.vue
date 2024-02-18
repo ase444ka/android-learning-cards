@@ -1,28 +1,11 @@
 <template>
   <ion-page>
-    <ion-header class="my-header">
-      <ion-toolbar>
-        <ion-buttons slot="secondary">
-          <ion-button>
-            сначала новые
-            <ion-icon slot="end" :icon="swapVerticalOutline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" id="calendar_opener">
-            <ion-icon slot="icon-only" :icon="calendarOutline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear">
-            <ion-icon slot="icon-only" :icon="pricetagsOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-title v-if="selectedDate">{{ selectedDate }}</ion-title>
-        <ion-title v-else>Все карточки</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <HeaderComponent :calendarOpenerId="CALENDAR_OPENER_ID" />
 
     <ion-content :fullscreen="true">
       <div id="container">
         <CalendarModal
-          trigger="calendar_opener"
+          :trigger="CALENDAR_OPENER_ID"
           :presentedDates="presentedDates"
           @confirm="
             (payload) => {
@@ -49,22 +32,11 @@
 </template>
 
 <script setup>
-import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonLoading,
-  IonSkeletonText,
-} from "@ionic/vue";
+import { IonContent, IonPage, IonSkeletonText } from "@ionic/vue";
 import { ref, onMounted, defineComponent, computed } from "vue";
 import FlippingCard from "@/components/FlippingCard.vue";
 import CalendarModal from "@/components/CalendarModal.vue";
-import { calendarOutline, pricetagsOutline, swapVerticalOutline } from "ionicons/icons";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 import config from "@/firebase";
 import http from "@/http";
 import { signIn } from "@/auth";
@@ -76,6 +48,8 @@ import "swiper/css";
 const notes = ref([]);
 const loading = ref(true);
 const selectedDate = ref(null);
+
+const CALENDAR_OPENER_ID = "calendar_opener";
 
 const presentedDates = computed(() => {
   return notes.value.map((note) => note.day);
