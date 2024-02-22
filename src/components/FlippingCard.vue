@@ -57,13 +57,12 @@ watchEffect(async() => {
   if (!flipped.value || !imageLoading.value || !props.note.image) {
     return
   }
-  console.log('watcher')
   let imgRef
   try {
     imgRef = storageRef(storage, props.note.image.path);
 
   } catch(e) {
-    console.log('tororor ', e.message)
+    console.log('errorr ', e.message)
   }
   try {
     imageSrc.value = await getDownloadURL(imgRef);

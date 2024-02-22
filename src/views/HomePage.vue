@@ -33,19 +33,7 @@
         <div class="skeleton" v-if="loading">
           <ion-skeleton-text :animated="true"></ion-skeleton-text>
         </div>
-        <div class="swiper">
-          <!-- Additional required wrapper -->
-          <div class="swiper-wrapper">
-            <!-- Slides -->
-            <div
-              class="swiper-slide"
-              v-for="note in filteredNotes"
-              :key="note.id"
-            >
-              <FlippingCard :note="note" />
-            </div>
-          </div>
-        </div>
+        <CardsSlider :notes="filteredNotes" :updateKey="updateKey" />
       </div>
     </ion-content>
   </ion-page>
@@ -53,23 +41,21 @@
 
 <script setup>
 import {IonContent, IonPage, IonSkeletonText} from '@ionic/vue';
-import {ref, onMounted, defineComponent, computed} from 'vue';
-import FlippingCard from '@/components/FlippingCard.vue';
+import {ref, onMounted, defineComponent, computed, watchEffect} from 'vue';
 import CalendarModal from '@/components/CalendarModal.vue';
 import TagsModal from '@/components/TagsModal.vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
+import CardsSlider from '@/components/CardsSlider.vue'
 import config from '@/firebase';
 import http from '@/http';
 import {signIn} from '@/auth';
-// import Swiper JS
-import Swiper from 'swiper';
-// import Swiper styles
-import 'swiper/css';
+
 
 const notes = ref([]);
 const loading = ref(true);
 const selectedDate = ref(null);
 const selectedTag = ref(null);
+const updateKey = ref(1)
 
 const CALENDAR_OPENER_ID = 'calendar_opener';
 const TAGS_OPENER_ID = 'tags_opener';
@@ -101,9 +87,14 @@ onMounted(async () => {
     ...entry[1],
     day: new Date(entry[1].date).toLocaleDateString(),
   }));
-  const swiper = new Swiper('.swiper', {});
+  
   loading.value = false;
 });
+
+watchEffect(() => {
+  updateKey.value = filteredNotes.value.length
+})
+
 </script>
 
 <style scoped>
