@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import {ref, computed, watch, watchEffect} from 'vue';
+import {ref} from 'vue';
 import SimpleModal from '@/components/SimpleModal.vue';
 import {IonDatetime} from '@ionic/vue';
 const emit = defineEmits(['confirm', 'cancel']);

@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-    <HeaderComponent :calendarOpenerId="CALENDAR_OPENER_ID" />
+    <HeaderComponent
+      :calendarOpenerId="CALENDAR_OPENER_ID"
+      :tagsOpenerId="TAGS_OPENER_ID"
+      :date="selectedDate"
+      :tag="selectedTag"
+    />
 
     <ion-content :fullscreen="true">
       <div id="container">
@@ -9,9 +14,20 @@
           :presentedDates="presentedDates"
           @confirm="
             (payload) => {
+              selectedTag = null;
               selectedDate = payload;
             }
           "
+        />
+        <TagsModal
+          :trigger="TAGS_OPENER_ID"
+          @confirm="
+            (payload) => {
+              selectedDate = null;
+              selectedTag = payload;
+            }
+          "
+          :tags="tags"
         />
 
         <div class="skeleton" v-if="loading">
@@ -21,7 +37,11 @@
           <!-- Additional required wrapper -->
           <div class="swiper-wrapper">
             <!-- Slides -->
-            <div class="swiper-slide" v-for="note in filteredNotes" :key="note.id">
+            <div
+              class="swiper-slide"
+              v-for="note in filteredNotes"
+              :key="note.id"
+            >
               <FlippingCard :note="note" />
             </div>
           </div>
@@ -32,24 +52,27 @@
 </template>
 
 <script setup>
-import { IonContent, IonPage, IonSkeletonText } from "@ionic/vue";
-import { ref, onMounted, defineComponent, computed } from "vue";
-import FlippingCard from "@/components/FlippingCard.vue";
-import CalendarModal from "@/components/CalendarModal.vue";
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import config from "@/firebase";
-import http from "@/http";
-import { signIn } from "@/auth";
+import {IonContent, IonPage, IonSkeletonText} from '@ionic/vue';
+import {ref, onMounted, defineComponent, computed} from 'vue';
+import FlippingCard from '@/components/FlippingCard.vue';
+import CalendarModal from '@/components/CalendarModal.vue';
+import TagsModal from '@/components/TagsModal.vue';
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import config from '@/firebase';
+import http from '@/http';
+import {signIn} from '@/auth';
 // import Swiper JS
-import Swiper from "swiper";
+import Swiper from 'swiper';
 // import Swiper styles
-import "swiper/css";
+import 'swiper/css';
 
 const notes = ref([]);
 const loading = ref(true);
 const selectedDate = ref(null);
+const selectedTag = ref(null);
 
-const CALENDAR_OPENER_ID = "calendar_opener";
+const CALENDAR_OPENER_ID = 'calendar_opener';
+const TAGS_OPENER_ID = 'tags_opener';
 
 const presentedDates = computed(() => {
   return notes.value.map((note) => note.day);
@@ -58,6 +81,8 @@ const presentedDates = computed(() => {
 const filteredNotes = computed(() => {
   if (selectedDate.value) {
     return notes.value.filter((note) => note.day === selectedDate.value);
+  } else if (selectedTag.value) {
+    return notes.value.filter((note) => note.tag === selectedTag.value);
   } else {
     return notes.value;
   }
@@ -68,7 +93,7 @@ const tags = computed(() => {
 });
 
 onMounted(async () => {
-  await signIn("istomina.asia@yandex.ru", "777777");
+  await signIn('istomina.asia@yandex.ru', '777777');
   const receivedNotes = await http.getNotes();
 
   notes.value = Object.entries(receivedNotes).map((entry) => ({
@@ -76,7 +101,7 @@ onMounted(async () => {
     ...entry[1],
     day: new Date(entry[1].date).toLocaleDateString(),
   }));
-  const swiper = new Swiper(".swiper", {});
+  const swiper = new Swiper('.swiper', {});
   loading.value = false;
 });
 </script>
