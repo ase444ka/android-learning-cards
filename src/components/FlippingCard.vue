@@ -82,6 +82,7 @@ watchEffect(async() => {
     padding: 10px;
     display: grid;
     place-items: center;
+    align-items: start;
     height: 100%;
     min-width: 50%;
     margin: 0 auto;
@@ -117,6 +118,7 @@ watchEffect(async() => {
   @media (max-width: 900px) {
   .card {
     height: 97vh;
+    margin-top: 70px;
   }
 }
 

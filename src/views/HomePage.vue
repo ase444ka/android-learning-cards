@@ -45,17 +45,16 @@ import {ref, onMounted, defineComponent, computed, watchEffect} from 'vue';
 import CalendarModal from '@/components/CalendarModal.vue';
 import TagsModal from '@/components/TagsModal.vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
-import CardsSlider from '@/components/CardsSlider.vue'
+import CardsSlider from '@/components/CardsSlider.vue';
 import config from '@/firebase';
 import http from '@/http';
 import {signIn} from '@/auth';
-
 
 const notes = ref([]);
 const loading = ref(true);
 const selectedDate = ref(null);
 const selectedTag = ref(null);
-const updateKey = ref(1)
+const updateKey = ref(1);
 
 const CALENDAR_OPENER_ID = 'calendar_opener';
 const TAGS_OPENER_ID = 'tags_opener';
@@ -87,31 +86,16 @@ onMounted(async () => {
     ...entry[1],
     day: new Date(entry[1].date).toLocaleDateString(),
   }));
-  
+
   loading.value = false;
 });
 
 watchEffect(() => {
-  updateKey.value = filteredNotes.value.length
-})
-
+  updateKey.value = filteredNotes.value.length;
+});
 </script>
 
 <style scoped>
-.skeleton {
-  margin: auto;
-  width: 300px;
-  height: 300px;
-}
-@media (max-width: 900px) {
-  .my-header {
-    opacity: 0;
-  }
-  .my-header:hover {
-    opacity: 1;
-  }
-}
-
 #container {
   text-align: center;
 

@@ -1,5 +1,5 @@
 <template>
-  <ion-header>
+  <ion-header class="my-header">
     <ion-toolbar>
       <ion-buttons slot="secondary">
         <ion-button>
@@ -38,3 +38,20 @@ import {
 const emit = defineEmits(['']);
 const props = defineProps(['selectedDate', 'calendarOpenerId', 'tagsOpenerId', 'date', 'tag']);
 </script>
+
+<style scoped>
+.skeleton {
+  margin: auto;
+  width: 300px;
+  height: 300px;
+}
+@media (max-width: 900px) {
+  .my-header {
+    opacity: 0;
+  }
+  .my-header:hover {
+    opacity: 1;
+  }
+}
+
+</style>
