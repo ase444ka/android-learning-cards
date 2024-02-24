@@ -2,9 +2,13 @@
   <ion-header class="my-header">
     <ion-toolbar>
       <ion-buttons slot="secondary">
-        <ion-button>
-          сначала новые
-          <ion-icon slot="end" :icon="swapVerticalOutline"></ion-icon>
+        <ion-button
+          fill="clear"
+          title="сбросить фильтры"
+          :disabled="!props.date && !props.tag"
+           @click="$emit('refresh')"
+        >
+          <ion-icon slot="icon-only" :icon="refreshOutline"></ion-icon>
         </ion-button>
         <ion-button fill="clear" :id="props.calendarOpenerId">
           <ion-icon slot="icon-only" :icon="calendarOutline"></ion-icon>
@@ -33,10 +37,16 @@ import {
 import {
   calendarOutline,
   pricetagsOutline,
-  swapVerticalOutline,
+  refreshOutline,
 } from 'ionicons/icons';
-const emit = defineEmits(['']);
-const props = defineProps(['selectedDate', 'calendarOpenerId', 'tagsOpenerId', 'date', 'tag']);
+const emit = defineEmits(['refresh']);
+const props = defineProps([
+  'selectedDate',
+  'calendarOpenerId',
+  'tagsOpenerId',
+  'date',
+  'tag',
+]);
 </script>
 
 <style scoped>
@@ -53,5 +63,4 @@ const props = defineProps(['selectedDate', 'calendarOpenerId', 'tagsOpenerId', '
     opacity: 1;
   }
 }
-
 </style>

@@ -13,7 +13,6 @@ const localCode = ref(null)
 
 onMounted(() => {
     localCode.value = props.code
-    console.log(localCode.value);
 })
 
 
