@@ -24,6 +24,7 @@
     "axios": "^1.6.7",
     "firebase": "^10.8.0",
     "ionicons": "^7.0.0",
+    "mitt": "^3.0.1",
     "simple-syntax-highlighter": "^3.0.2",
     "swiper": "^11.0.6",
     "uuid": "^9.0.1",

@@ -37,19 +37,21 @@
         <CardsSlider :notes="filteredNotes" :updateKey="updateKey" />
       </div>
     </ion-content>
+    <NewNote />
   </ion-page>
 </template>
 
 <script setup>
-import { IonContent, IonPage, IonSkeletonText } from "@ionic/vue";
-import { ref, onMounted, defineComponent, computed, watchEffect } from "vue";
-import CalendarModal from "@/components/CalendarModal.vue";
-import TagsModal from "@/components/TagsModal.vue";
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import CardsSlider from "@/components/CardsSlider.vue";
-import config from "@/firebase";
-import http from "@/http";
-import { signIn } from "@/auth";
+import {IonContent, IonPage, IonSkeletonText} from '@ionic/vue';
+import {ref, onMounted, defineComponent, computed, watchEffect} from 'vue';
+import CalendarModal from '@/components/CalendarModal.vue';
+import TagsModal from '@/components/TagsModal.vue';
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import CardsSlider from '@/components/CardsSlider.vue';
+import NewNote from '@/components/NewNote.vue';
+import config from '@/firebase';
+import http from '@/http';
+import {signIn} from '@/auth';
 
 const notes = ref([]);
 const loading = ref(true);
@@ -57,8 +59,8 @@ const selectedDate = ref(null);
 const selectedTag = ref(null);
 const updateKey = ref(1);
 
-const CALENDAR_OPENER_ID = "calendar_opener";
-const TAGS_OPENER_ID = "tags_opener";
+const CALENDAR_OPENER_ID = 'calendar_opener';
+const TAGS_OPENER_ID = 'tags_opener';
 
 const presentedDates = computed(() => {
   return notes.value.map((note) => note.day);
@@ -84,7 +86,7 @@ const tags = computed(() => {
 });
 
 onMounted(async () => {
-  await signIn("istomina.asia@yandex.ru", "777777");
+  await signIn('istomina.asia@yandex.ru', '777777');
   const receivedNotes = await http.getNotes();
 
   notes.value = Object.entries(receivedNotes).map((entry) => ({

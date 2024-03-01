@@ -1,5 +1,5 @@
 <template>
-    <div @click="() => flipped = !flipped" class="flipper">
+    <div @click="() => flipped = !flipped" class="flipper" ref="card">
         <Transition name="l">
           <p class="card" v-if="!flipped">
             <h1>{{props.note.about}}</h1>
@@ -35,12 +35,22 @@ import { storage } from "@/firebase.js";
 import { ref as storageRef, getDownloadURL } from "firebase/storage";
 import CodeBlock from "@/components/CodeBlock.vue";
 import {IonSkeletonText} from '@ionic/vue'
+import {emitter} from '@/mitt.js'
+
+const card = ref(null)
+
+emitter.on('slideChange', () => {
+
+  if (!flipped.value) return
+  flipped.value = false
+})
 
 
 
 const flipped = ref(false)
 const trololo = ref('trololo')
 const props = defineProps(["note"]);
+
 const imageSrc = ref(null);
 const imageLoading=ref(true)
 
@@ -74,6 +84,14 @@ watchEffect(async() => {
   }
  
 });
+
+watchEffect(() => {
+  if (flipped.value) {
+    emitter.emit('flip')
+  } else {
+    emitter.emit('unflip')
+  }
+})
 
 </script>
 <style lang="css" scoped>

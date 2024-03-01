@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import {onMounted, onUpdated} from 'vue';
+import {onMounted, onUpdated, watchEffect} from 'vue';
 import FlippingCard from '@/components/FlippingCard.vue';
 // import Swiper JS
 import Swiper from 'swiper';
@@ -22,9 +22,11 @@ import Swiper from 'swiper';
 import 'swiper/css';
 let swiper;
 let isSwiper = false;
+import {emitter} from '@/mitt.js';
 
 const emit = defineEmits(['']);
 const props = defineProps(['notes']);
+
 
 const initSwiper = () => {
   if (isSwiper) {
@@ -34,8 +36,16 @@ const initSwiper = () => {
   if (props.notes.length === 1) {
     return;
   }
-  swiper = new Swiper('.swiper', {loop: true});
-  isSwiper = true
+  swiper = new Swiper('.swiper', {
+    loop: true,
+    on: {
+      slideChangeTransitionEnd: function () {
+       
+        emitter.emit('slideChange');
+      },
+    },
+  });
+  isSwiper = true;
 };
 
 onMounted(initSwiper);
