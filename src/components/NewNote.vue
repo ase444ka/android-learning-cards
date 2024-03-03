@@ -37,13 +37,37 @@
           +
         </ion-button>
         <ion-input
-          label="tagname"
+          placeholder="#"
+          v-maskito="tagOptions"
           color="dark"
           v-if="addingTag"
           fill="outline"
           style="width: 100px"
+          v-model="newTag"
         ></ion-input>
       </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-input
+              placeholder="я узнала про..."
+              fill="outline"
+              v-model="about"
+              clear-input
+            ></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-textarea
+              placeholder="..."
+              fill="outline"
+              auto-grow
+              v-model="text"
+            ></ion-textarea>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-content>
   </ion-modal>
   <ion-fab slot="fixed" vertical="bottom" horizontal="center">
@@ -65,10 +89,16 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
+  IonInput,
+  IonRow,
+  IonCol,
+  IonGrid,
+  IonTextarea,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
 import {addOutline, chevronBackOutline} from 'ionicons/icons';
 import {ref, computed, watch, watchEffect} from 'vue';
+import {maskito as vMaskito} from '@maskito/vue';
 
 const emit = defineEmits(['']);
 const props = defineProps(['tags']);
@@ -78,6 +108,9 @@ const showAddButton = ref(true);
 const selected = ref('js');
 const currentTag = ref(null);
 const addingTag = ref(false);
+const newTag = ref(null);
+const about = ref('');
+const text = ref('');
 
 emitter.on('flip', () => {
   showAddButton.value = false;
@@ -85,6 +118,18 @@ emitter.on('flip', () => {
 emitter.on('unflip', () => {
   showAddButton.value = true;
 });
+
+const tagOptions = {
+  mask: ['#', ...Array(20).fill(/./)],
+  elementPredicate: (el) => {
+    return new Promise((resolve) => {
+      requestAnimationFrame(async () => {
+        const input = await el.getInputElement();
+        resolve(input);
+      });
+    });
+  },
+};
 
 const cancel = () => modal.value.$el.dismiss();
 
@@ -94,8 +139,15 @@ const confirm = () => {
 
 const addNewTag = () => {
   addingTag.value = true;
-  currentTag = null;
+  currentTag.value = null;
 };
+
+watchEffect(() => {
+  if (currentTag.value && addingTag.value) {
+    addingTag.value = false;
+    newTag.value = null;
+  }
+});
 </script>
 
 <style lang="css">
