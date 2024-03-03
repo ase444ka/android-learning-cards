@@ -37,7 +37,7 @@
         <CardsSlider :notes="filteredNotes" :updateKey="updateKey" />
       </div>
     </ion-content>
-    <NewNote />
+    <NewNote :tags="tags"/>
   </ion-page>
 </template>
 

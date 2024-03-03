@@ -1,17 +1,50 @@
 <template>
   <ion-modal ref="modal" trigger="new-note">
-    <ion-header>
+    <ion-header class="ion-no-border">
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button @click="cancel()">Отмена</ion-button>
+        <ion-buttons>
+          <ion-button @click="cancel()" fill="clear">
+            <ion-icon slot="icon-only" :icon="chevronBackOutline"></ion-icon>
+          </ion-button>
         </ion-buttons>
-        <ion-title>Welcome</ion-title>
         <ion-buttons slot="end">
-          <ion-button :strong="true" @click="confirm()">Подтвердить</ion-button>
+          <ion-button @click="confirm()">Сохранить</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding"> hellooo </ion-content>
+    <ion-content class="ion-padding">
+      <div class="flex">
+        <select class="custom-select" v-model="selected">
+          <option value="js">JS</option>
+          <option value="css">CSS</option>
+          <option value="html">HTML</option>
+          <option value="text">text</option>
+        </select>
+        <ion-button
+          @click="currentTag = tag"
+          :fill="currentTag === tag ? 'solid' : 'outline'"
+          v-for="tag in props.tags"
+          :key="tag"
+          color="dark"
+        >
+          #{{ tag }}
+        </ion-button>
+        <ion-button
+          @click="addNewTag"
+          :fill="addingTag ? 'solid' : 'outline'"
+          color="dark"
+        >
+          +
+        </ion-button>
+        <ion-input
+          label="tagname"
+          color="dark"
+          v-if="addingTag"
+          fill="outline"
+          style="width: 100px"
+        ></ion-input>
+      </div>
+    </ion-content>
   </ion-modal>
   <ion-fab slot="fixed" vertical="bottom" horizontal="center">
     <ion-fab-button id="new-note" v-show="showAddButton">
@@ -34,21 +67,70 @@ import {
   IonIcon,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
-import {addOutline} from 'ionicons/icons';import {ref, computed, watch, watchEffect} from 'vue';
+import {addOutline, chevronBackOutline} from 'ionicons/icons';
+import {ref, computed, watch, watchEffect} from 'vue';
+
 const emit = defineEmits(['']);
-const props = defineProps(['']);
+const props = defineProps(['tags']);
 
-const modal = ref(null)
-const showAddButton = ref(true)
+const modal = ref(null);
+const showAddButton = ref(true);
+const selected = ref('js');
+const currentTag = ref(null);
+const addingTag = ref(false);
 
-emitter.on('flip', () => {showAddButton.value = false})
-emitter.on('unflip', () => {showAddButton.value = true})
+emitter.on('flip', () => {
+  showAddButton.value = false;
+});
+emitter.on('unflip', () => {
+  showAddButton.value = true;
+});
 
 const cancel = () => modal.value.$el.dismiss();
 
-  const confirm = () => {
-    modal.value.$el.dismiss();
-  };
+const confirm = () => {
+  modal.value.$el.dismiss();
+};
+
+const addNewTag = () => {
+  addingTag.value = true;
+  currentTag = null;
+};
 </script>
 
-<style lang="css"></style>
+<style lang="css">
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+ion-button {
+  --border-radius: 3px;
+}
+.custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 47px;
+  padding: 10px 38px 10px 16px;
+  background: #fff url('select-arrows.svg') no-repeat right 16px center;
+  background-size: 10px;
+  transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+  border: 1px solid #ddd;
+  margin-right: 20px;
+  border-radius: 3px;
+}
+.custom-select:hover {
+  border: 1px solid #999;
+}
+.custom-select:focus {
+  border: 1px solid #999;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+/* remove default arrow in IE */
+select::-ms-expand {
+  display: none;
+}
+</style>
