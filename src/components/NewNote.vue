@@ -8,7 +8,10 @@
           </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <ion-button @click="confirm()">Сохранить</ion-button>
+          <ion-button @click="sendNote" :disabled="saveButtonDisabled">
+            <ion-spinner name="dots" v-if="sending"></ion-spinner>
+            <span v-else>Сохранить</span>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -29,13 +32,13 @@
         >
           #{{ tag }}
         </ion-button>
-        <ion-button
+        <IonButton
           @click="addNewTag"
           :fill="addingTag ? 'solid' : 'outline'"
           color="dark"
         >
           +
-        </ion-button>
+        </IonButton>
         <ion-input
           placeholder="#"
           v-maskito="tagOptions"
@@ -85,7 +88,6 @@ import {
   IonHeader,
   IonContent,
   IonToolbar,
-  IonTitle,
   IonFab,
   IonFabButton,
   IonIcon,
@@ -94,13 +96,15 @@ import {
   IonCol,
   IonGrid,
   IonTextarea,
+  IonLoading,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
 import {addOutline, chevronBackOutline} from 'ionicons/icons';
-import {ref, computed, watch, watchEffect} from 'vue';
+import {ref, computed, watchEffect} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
+import http from '@/http';
 
-const emit = defineEmits(['']);
+const emit = defineEmits(['send']);
 const props = defineProps(['tags']);
 
 const modal = ref(null);
@@ -111,6 +115,7 @@ const addingTag = ref(false);
 const newTag = ref(null);
 const about = ref('');
 const text = ref('');
+const sending = ref(false);
 
 emitter.on('flip', () => {
   showAddButton.value = false;
@@ -133,9 +138,9 @@ const tagOptions = {
 
 const cancel = () => modal.value.$el.dismiss();
 
-const confirm = () => {
-  modal.value.$el.dismiss();
-};
+const saveButtonDisabled = computed(() => {
+  return !text.value || !about.value || (!currentTag.value && !newTag.value);
+});
 
 const addNewTag = () => {
   addingTag.value = true;
@@ -148,6 +153,71 @@ watchEffect(() => {
     newTag.value = null;
   }
 });
+
+const noteToSend = computed(() => {
+  let localText = null;
+  let localCode = null;
+  let localAbout = about.value;
+  let localImage = null;
+  let tag = currentTag.value || newTag.value?.slice(1);
+
+  switch (selected.value) {
+    case 'js':
+      localCode = {
+        lang: 'js',
+        code: text.value,
+      };
+      break;
+    case 'css':
+      localCode = {
+        lang: 'css',
+        code: text.value,
+      };
+      break;
+    case 'html':
+      localCode = {
+        lang: 'html',
+        code: text.value,
+      };
+    case 'text':
+      localText = text.value;
+
+    default:
+      break;
+  }
+
+  return {
+    about: localAbout,
+    text: localText,
+    code: localCode,
+    image: localImage,
+    tag,
+  };
+});
+
+const clearNote = () => {
+  about.value = '';
+  text.value = '';
+  newTag.value = null;
+  addingTag.value = null;
+  currentTag.value = null;
+  selected.value = 'js';
+};
+const sendNote = async () => {
+  sending.value = true;
+
+  try {
+    await http.sendNote(noteToSend.value);
+    emit('send')
+
+  } catch (e) {
+    console.log(e);
+  } finally {
+    clearNote();
+    sending.value = false;
+    modal.value.$el.dismiss();
+  }
+};
 </script>
 
 <style lang="css">

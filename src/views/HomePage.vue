@@ -37,7 +37,7 @@
         <CardsSlider :notes="filteredNotes" :updateKey="updateKey" />
       </div>
     </ion-content>
-    <NewNote :tags="tags"/>
+    <NewNote :tags="tags" @send="receiveNotes" />
   </ion-page>
 </template>
 
@@ -54,7 +54,7 @@ import http from '@/http';
 import {signIn} from '@/auth';
 
 const notes = ref([]);
-const loading = ref(true);
+const loading = ref(false);
 const selectedDate = ref(null);
 const selectedTag = ref(null);
 const updateKey = ref(1);
@@ -87,6 +87,12 @@ const tags = computed(() => {
 
 onMounted(async () => {
   await signIn('istomina.asia@yandex.ru', '777777');
+  await receiveNotes();
+});
+
+const receiveNotes = async () => {
+  console.log('rrressivve');
+  loading.value = true;
   const receivedNotes = await http.getNotes();
 
   notes.value = Object.entries(receivedNotes).map((entry) => ({
@@ -96,7 +102,7 @@ onMounted(async () => {
   }));
 
   loading.value = false;
-});
+};
 
 watchEffect(() => {
   updateKey.value = filteredNotes.value.length;
