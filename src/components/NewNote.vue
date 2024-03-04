@@ -66,8 +66,14 @@
               placeholder="..."
               fill="outline"
               auto-grow
-              v-model="text"
+              @click.prevent="() => {Camera.pickImages()}"
             ></ion-textarea>
+            <!-- <ion-textarea
+              placeholder="..."
+              fill="outline"
+              auto-grow
+              v-model="text"
+            ></ion-textarea> -->
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -103,6 +109,7 @@ import {addOutline, chevronBackOutline} from 'ionicons/icons';
 import {ref, computed, watchEffect} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
 import http from '@/http';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 const emit = defineEmits(['send']);
 const props = defineProps(['tags']);
