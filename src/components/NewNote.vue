@@ -22,6 +22,7 @@
           <option value="css">CSS</option>
           <option value="html">HTML</option>
           <option value="text">text</option>
+          <option value="image">image</option>
         </select>
         <ion-button
           @click="currentTag = tag"
@@ -63,17 +64,20 @@
         <ion-row>
           <ion-col>
             <ion-textarea
+              v-if="selected === 'image'"
               placeholder="..."
               fill="outline"
               auto-grow
-              @click.prevent="() => {Camera.pickImages()}"
+              @click.prevent="chooseImage"
             ></ion-textarea>
-            <!-- <ion-textarea
+            <ion-textarea
+              v-else
               placeholder="..."
               fill="outline"
               auto-grow
               v-model="text"
-            ></ion-textarea> -->
+            ></ion-textarea>
+            <div>{{ test }}</div>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -105,11 +109,11 @@ import {
   IonLoading,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
-import {addOutline, chevronBackOutline} from 'ionicons/icons';
+import {addOutline, chevronBackOutline, cog} from 'ionicons/icons';
 import {ref, computed, watchEffect} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
 import http from '@/http';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import {Camera, CameraResultType} from '@capacitor/camera';
 
 const emit = defineEmits(['send']);
 const props = defineProps(['tags']);
@@ -123,6 +127,7 @@ const newTag = ref(null);
 const about = ref('');
 const text = ref('');
 const sending = ref(false);
+const test = ref('test')
 
 emitter.on('flip', () => {
   showAddButton.value = false;
@@ -152,6 +157,11 @@ const saveButtonDisabled = computed(() => {
 const addNewTag = () => {
   addingTag.value = true;
   currentTag.value = null;
+};
+
+const chooseImage = async () => {
+  const images = await Camera.pickImages();
+  test.value = JSON.stringify(images)
 };
 
 watchEffect(() => {
@@ -215,8 +225,7 @@ const sendNote = async () => {
 
   try {
     await http.sendNote(noteToSend.value);
-    emit('send')
-
+    emit('send');
   } catch (e) {
     console.log(e);
   } finally {
