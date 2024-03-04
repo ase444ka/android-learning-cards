@@ -77,7 +77,16 @@
               auto-grow
               v-model="text"
             ></ion-textarea>
-            <div>{{ test }}</div>
+            <img
+              :src="localImageUrl"
+              ref="imageElement"
+              @load="imageLoaded = true"
+              style="
+                border: 1px solid
+                  rgba(var(--v-border-color), var(--v-border-opacity));
+                border-radius: 4px;
+              "
+            />
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -106,14 +115,13 @@ import {
   IonCol,
   IonGrid,
   IonTextarea,
-  IonLoading,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
 import {addOutline, chevronBackOutline, cog} from 'ionicons/icons';
 import {ref, computed, watchEffect} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
 import http from '@/http';
-import {Camera, CameraResultType} from '@capacitor/camera';
+import {Camera} from '@capacitor/camera';
 
 const emit = defineEmits(['send']);
 const props = defineProps(['tags']);
@@ -127,7 +135,10 @@ const newTag = ref(null);
 const about = ref('');
 const text = ref('');
 const sending = ref(false);
-const test = ref('test')
+const localImageUrl = ref(null);
+const blob = ref(null);
+const imageElement = ref(null)
+const imageLoaded = ref(true)
 
 emitter.on('flip', () => {
   showAddButton.value = false;
@@ -151,7 +162,7 @@ const tagOptions = {
 const cancel = () => modal.value.$el.dismiss();
 
 const saveButtonDisabled = computed(() => {
-  return !text.value || !about.value || (!currentTag.value && !newTag.value);
+  return !about.value || (!currentTag.value && !newTag.value) || (!text.value && !imageLoaded.value);
 });
 
 const addNewTag = () => {
@@ -161,7 +172,10 @@ const addNewTag = () => {
 
 const chooseImage = async () => {
   const images = await Camera.pickImages();
-  test.value = JSON.stringify(images)
+  const img = images.photos[0]
+  localImageUrl.value = img.webPath;
+  const response = await fetch(img.webPath);
+  blob.value = await response.blob();
 };
 
 watchEffect(() => {
@@ -170,6 +184,11 @@ watchEffect(() => {
     newTag.value = null;
   }
 });
+watchEffect(() => {
+  if (selected.value === 'image') {
+    imageLoaded.value = false
+  }
+})
 
 const noteToSend = computed(() => {
   let localText = null;
@@ -196,8 +215,18 @@ const noteToSend = computed(() => {
         lang: 'html',
         code: text.value,
       };
+      break;
     case 'text':
       localText = text.value;
+      break;
+    case 'image':
+      localImage = {
+        file: blob.value,
+        sizeX: imageElement?.value?.offsetWidth,
+        sizeY: imageElement?.value?.offsetHeight,
+      }
+      break;
+
 
     default:
       break;
