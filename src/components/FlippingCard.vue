@@ -14,7 +14,7 @@
               :lang="props.note.code.lang"
             />
 
-            <div v-if="imageSrc"  class="swiper-zoom-container">
+            <div v-if="imageSrc">
               <div class="skeleton" :style="imageSizes" v-if="imageLoading">
                 <ion-skeleton-text :animated="true"></ion-skeleton-text>
               </div>
