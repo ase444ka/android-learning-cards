@@ -7,9 +7,7 @@
     <div class="swiper-wrapper">
       <!-- Slides -->
       <div class="swiper-slide" v-for="note in props.notes" :key="note.id">
-        <div class="swiper-zoom-container">
-          <FlippingCard :note="note" class="swiper-zoom-target"/>
-        </div>
+        <FlippingCard :note="note" />
       </div>
     </div>
   </div>
@@ -29,6 +27,7 @@ import {emitter} from '@/mitt.js';
 const emit = defineEmits(['']);
 const props = defineProps(['notes']);
 
+
 const initSwiper = () => {
   if (isSwiper) {
     swiper.destroy();
@@ -41,6 +40,7 @@ const initSwiper = () => {
     loop: true,
     on: {
       slideChangeTransitionEnd: function () {
+       
         emitter.emit('slideChange');
       },
     },
