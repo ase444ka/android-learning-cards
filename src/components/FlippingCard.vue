@@ -18,7 +18,7 @@
               <div class="skeleton" :style="imageSizes" v-if="imageLoading">
                 <ion-skeleton-text :animated="true"></ion-skeleton-text>
               </div>
-              <img :src="imageSrc" @load="() => (imageLoading = false)" />
+                <img :src="imageSrc" @load="initImage" class="img-zoomable" />
             </div>
 
             <div v-if="props.note.text">
@@ -35,7 +35,9 @@ import { storage } from "@/firebase.js";
 import { ref as storageRef, getDownloadURL } from "firebase/storage";
 import CodeBlock from "@/components/CodeBlock.vue";
 import {IonSkeletonText} from '@ionic/vue'
+import Zooming from 'zooming'
 import {emitter} from '@/mitt.js'
+import { isPlatform } from '@ionic/vue';
 
 const card = ref(null)
 
@@ -44,6 +46,16 @@ emitter.on('slideChange', () => {
   if (!flipped.value) return
   flipped.value = false
 })
+
+const initImage = () => {
+  imageLoading.value = false
+  alert(isPlatform('mobile'))
+  if (isPlatform('mobile')) {
+    const zooming = new Zooming({})
+  zooming.listen('.img-zoomable')
+  }
+  
+}
 
 
 
