@@ -64,8 +64,15 @@
         <ion-row>
           <ion-col>
             <ion-textarea
-              v-if="selected === 'image'"
+              v-if="selected === 'image' && isMobile"
               placeholder="..."
+              fill="outline"
+              auto-grow
+              @click.prevent="chooseImage"
+            ></ion-textarea>
+            <ion-textarea
+              v-else-if="selected === 'image' && !isMobile"
+              placeholder="вставьте картинку"
               fill="outline"
               auto-grow
               @click.prevent="chooseImage"
@@ -122,6 +129,7 @@ import {ref, computed, watchEffect} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
 import http from '@/http';
 import {Camera} from '@capacitor/camera';
+import { isPlatform } from '@ionic/vue';
 
 const emit = defineEmits(['send']);
 const props = defineProps(['tags']);
@@ -139,6 +147,7 @@ const localImageUrl = ref(null);
 const blob = ref(null);
 const imageElement = ref(null)
 const imageLoaded = ref(true)
+const isMobile = isPlatform('mobile')
 
 emitter.on('flip', () => {
   showAddButton.value = false;
