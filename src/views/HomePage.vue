@@ -31,8 +31,8 @@
           :tags="tags"
         />
 
-        <div class="skeleton" v-if="loading">
-          <ion-skeleton-text :animated="true"></ion-skeleton-text>
+        <div class="loading" v-if="loading">
+          <ion-spinner name="dots" v-if="loading"></ion-spinner>
         </div>
         <CardsSlider :notes="filteredNotes" :updateKey="updateKey" />
       </div>
@@ -42,8 +42,8 @@
 </template>
 
 <script setup>
-import {IonContent, IonPage, IonSkeletonText} from '@ionic/vue';
-import {ref, onMounted, defineComponent, computed, watchEffect} from 'vue';
+import {IonContent, IonPage, IonSpinner} from '@ionic/vue';
+import {ref, onMounted, computed, watchEffect} from 'vue';
 import CalendarModal from '@/components/CalendarModal.vue';
 import TagsModal from '@/components/TagsModal.vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
@@ -54,7 +54,7 @@ import http from '@/http';
 import {signIn} from '@/auth';
 
 const notes = ref([]);
-const loading = ref(false);
+const loading = ref(true);
 const selectedDate = ref(null);
 const selectedTag = ref(null);
 const updateKey = ref(1);
@@ -91,7 +91,6 @@ onMounted(async () => {
 });
 
 const receiveNotes = async () => {
-  console.log('rrressivve');
   loading.value = true;
   const receivedNotes = await http.getNotes();
 
@@ -110,6 +109,10 @@ watchEffect(() => {
 </script>
 
 <style scoped>
+.loading {
+  display: grid;
+  place-items: center;
+}
 #container {
   position: absolute;
   left: 0;
