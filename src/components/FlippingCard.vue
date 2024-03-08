@@ -141,7 +141,6 @@ watchEffect(() => {
 }
 @media (max-width: 900px) {
   .card {
-    height: 97vh;
     margin-top: 70px;
   }
 }
