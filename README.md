@@ -1,0 +1,1 @@
+https://ase444ka.github.io/android-learning-cards/ just app for my learning purposes. For now is's always logged in with my credentials, so anyone can send me a message through this app o_O. Later may be I'll make registration/authentification page
