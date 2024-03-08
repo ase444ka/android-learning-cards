@@ -124,7 +124,7 @@ import {
   IonTextarea,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
-import {addOutline, chevronBackOutline, cog} from 'ionicons/icons';
+import {addOutline, chevronBackOutline} from 'ionicons/icons';
 import {ref, computed, watchEffect} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
 import http from '@/http';

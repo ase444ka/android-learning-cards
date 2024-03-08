@@ -18,17 +18,8 @@
           <div class="skeleton" :style="imageSizes" v-if="imageLoading">
             <ion-skeleton-text :animated="true"></ion-skeleton-text>
           </div>
-          <!-- zoomist-container -->
-          <div class="zoomist-container">
-            <!-- zoomist-wrapper is required -->
-            <div class="zoomist-wrapper">
-              <!-- zoomist-image is required -->
-              <div class="zoomist-image">
-                <!-- you can add anything you want to zoom here. -->
-                <img :src="imageSrc" @load="initImage" />
-              </div>
-            </div>
-          </div>
+
+                <img :src="imageSrc" @load="imageLoading = false" @click="showFull = true" />
         </div>
 
         <div v-if="props.note.text">
@@ -36,22 +27,22 @@
         </div>
       </div>
     </Transition>
+    <FullImage :src="imageSrc" v-if="showFull" @back="showFull = false"/>
   </div>
 </template>
 <script setup>
-// import Zoomist styles
-import 'zoomist/css';
-// import Zoomist
-import Zoomist from 'zoomist';
+
 
 import {ref, watchEffect, computed} from 'vue';
 import {storage} from '@/firebase.js';
 import {ref as storageRef, getDownloadURL} from 'firebase/storage';
 import CodeBlock from '@/components/CodeBlock.vue';
+import FullImage from '@/components/FullImage.vue'
 import {IonSkeletonText} from '@ionic/vue';
 import {emitter} from '@/mitt.js';
 
 const card = ref(null);
+const showFull = ref(false)
 
 emitter.on('slideChange', () => {
   if (!flipped.value) return;
@@ -72,14 +63,7 @@ const imageSizes = computed(() => {
   };
 });
 
-const initImage = () => {
-  // initialize
-  imageLoading.value = false;
-  const zoomist = new Zoomist('.zoomist-container', {
-    // Optional parameters
-    maxScale: 8,
-  });
-};
+
 
 const handleClick = () => {
   if (flipped.value && imageSrc.value) {
