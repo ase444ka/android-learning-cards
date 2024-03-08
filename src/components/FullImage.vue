@@ -50,9 +50,12 @@ onMounted(initImage);
 ion-fab-button::part(native) {
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
   background-color: rgba(0,0,0,0);
-  border: 2px solid #808289;
   color: #808289;
 }
+ion-fab-button::part(native):hover {
+    background-color: rgba(128, 130, 137, 0.3);
+
+  }
 
 .full-image {
   position: fixed;
