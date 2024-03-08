@@ -1,8 +1,13 @@
 <template>
   <Teleport to="body">
-    <ion-button @click="$emit('back')" class="back-icon">
-      <ion-icon slot="icon-only" :icon="chevronBackOutline"></ion-icon>
-    </ion-button>
+    <ion-fab-button
+      @click="$emit('back')"
+      class="back-icon"
+      color="medium"
+      fill="outline"
+    >
+      <ion-icon :icon="chevronBackOutline"></ion-icon>
+    </ion-fab-button>
     <div class="full-image">
       <!-- zoomist-container -->
       <div class="zoomist-container">
@@ -20,7 +25,7 @@
 </template>
 
 <script setup>
-import {IonButton, IonIcon} from '@ionic/vue';
+import {IonFabButton, IonIcon} from '@ionic/vue';
 import {chevronBackOutline} from 'ionicons/icons';
 import {onMounted} from 'vue';
 const emit = defineEmits(['back']);
@@ -41,7 +46,14 @@ const initImage = () => {
 onMounted(initImage);
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
+ion-fab-button::part(native) {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+  background-color: rgba(0,0,0,0);
+  border: 2px solid #808289;
+  color: #808289;
+}
+
 .full-image {
   position: fixed;
   left: 0;

@@ -7,7 +7,7 @@
     </Transition>
 
     <Transition>
-      <div class="card" v-if="flipped">
+      <div class="card flipped" v-if="flipped">
         <CodeBlock
           v-if="props.note.code"
           :code="props.note.code.code"
@@ -135,6 +135,9 @@ watchEffect(() => {
   box-shadow: 9px 10px 22px -8px rgba(209, 193, 209, 0.5);
   will-change: transform;
   overflow: auto;
+}
+.card.flipped {
+  text-align: start;
 }
 @media (max-width: 900px) {
   .card {
