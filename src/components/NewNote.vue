@@ -104,6 +104,12 @@
       <ion-icon :icon="addOutline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  <ion-toast
+    :is-open="!!errorMessage"
+    :message="errorMessage"
+    :duration="7000"
+    @didDismiss="errorMessage = null"
+  ></ion-toast>
 </template>
 
 <script setup>
@@ -123,14 +129,15 @@ import {
   IonGrid,
   IonTextarea,
   IonSpinner,
+  IonToast,
 } from '@ionic/vue';
 import {emitter} from '@/mitt';
 import {addOutline, chevronBackOutline} from 'ionicons/icons';
-import {ref, computed, watchEffect} from 'vue';
+import {ref, computed, watchEffect, onMounted} from 'vue';
 import {maskito as vMaskito} from '@maskito/vue';
 import http from '@/http';
 import {Camera} from '@capacitor/camera';
-import { isPlatform } from '@ionic/vue';
+import {isPlatform} from '@ionic/vue';
 
 const emit = defineEmits(['send']);
 const props = defineProps(['tags']);
@@ -146,9 +153,10 @@ const text = ref('');
 const sending = ref(false);
 const localImageUrl = ref(null);
 const blob = ref(null);
-const imageElement = ref(null)
-const imageLoaded = ref(true)
-const isMobile = isPlatform('mobile')
+const imageElement = ref(null);
+const imageLoaded = ref(true);
+const isMobile = isPlatform('mobile');
+const errorMessage = ref(null);
 
 emitter.on('flip', () => {
   showAddButton.value = false;
@@ -172,7 +180,11 @@ const tagOptions = {
 const cancel = () => modal.value.$el.dismiss();
 
 const saveButtonDisabled = computed(() => {
-  return !about.value || (!currentTag.value && !newTag.value) || (!text.value && !imageLoaded.value);
+  return (
+    !about.value ||
+    (!currentTag.value && !newTag.value) ||
+    (!text.value && !imageLoaded.value)
+  );
 });
 
 const addNewTag = () => {
@@ -182,7 +194,7 @@ const addNewTag = () => {
 
 const chooseImage = async () => {
   const images = await Camera.pickImages();
-  const img = images.photos[0]
+  const img = images.photos[0];
   localImageUrl.value = img.webPath;
   const response = await fetch(img.webPath);
   blob.value = await response.blob();
@@ -196,9 +208,9 @@ watchEffect(() => {
 });
 watchEffect(() => {
   if (selected.value === 'image') {
-    imageLoaded.value = false
+    imageLoaded.value = false;
   }
-})
+});
 
 const noteToSend = computed(() => {
   let localText = null;
@@ -234,9 +246,8 @@ const noteToSend = computed(() => {
         file: blob.value,
         sizeX: imageElement?.value?.offsetWidth,
         sizeY: imageElement?.value?.offsetHeight,
-      }
+      };
       break;
-
 
     default:
       break;
@@ -258,6 +269,7 @@ const clearNote = () => {
   addingTag.value = null;
   currentTag.value = null;
   selected.value = 'js';
+  localImageUrl.value = null;
 };
 const sendNote = async () => {
   sending.value = true;
@@ -265,10 +277,11 @@ const sendNote = async () => {
   try {
     await http.sendNote(noteToSend.value);
     emit('send');
+    clearNote();
   } catch (e) {
     console.log(e);
+    errorMessage.value = `Error occured: ${e.message} :o( try later`;
   } finally {
-    clearNote();
     sending.value = false;
     modal.value.$el.dismiss();
   }
